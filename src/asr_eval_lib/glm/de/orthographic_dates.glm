@@ -1,0 +1,21 @@
+;; asr-eval-lib German ORT dates component GLM
+* name "asr-eval-lib-de-orthographic-dates.glm"
+* desc "Starter rules for German ORT date normalization"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'F'
+;;
+;; Rules operate after Python text normalization. Thus 3. März becomes 3 märz
+;; and 03.03 becomes 03 03 before this GLM is applied.
+3 märz => date_03_03
+03 märz => date_03_03
+dritter märz => date_03_03
+dritten märz => date_03_03
+3 maerz => date_03_03
+03 maerz => date_03_03
+dritter maerz => date_03_03
+dritten maerz => date_03_03
+03 03 => date_03_03
+03 3 => date_03_03
+3 03 => date_03_03
+3 3 => date_03_03

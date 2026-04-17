@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Mapping, Optional, Sequence, Tuple, Union
 
 from .errors import ProfileError, SctkExecutionError
+from .glm_composition import resolve_glm_for_evaluation
 from .models import EvaluationProfile, EvaluationResult, Score, Utterance
 from .normalization import normalize_text
 from .sctk import (
@@ -52,6 +53,9 @@ class ScliteEvaluator:
         hypotheses: Union[Mapping[str, str], Sequence[Union[str, Utterance]]],
         profile: EvaluationProfile,
         metrics: Optional[Sequence[str]] = None,
+        glm_components: Optional[Sequence[str]] = None,
+        exclude_glm_components: Optional[Sequence[str]] = None,
+        extra_glm_paths: Optional[Sequence[Union[str, Path]]] = None,
     ) -> EvaluationResult:
         selected_metrics = self._validate_metrics(profile, metrics)
         paired = coerce_paired_utterances(references, hypotheses)
@@ -60,16 +64,37 @@ class ScliteEvaluator:
             if self.keep_files:
                 root = Path(tempfile.mkdtemp(prefix="asr_eval_"))
                 return self._evaluate_in_dir(
-                    root, paired, profile, selected_metrics, report_dir=root
+                    root,
+                    paired,
+                    profile,
+                    selected_metrics,
+                    report_dir=root,
+                    glm_components=glm_components,
+                    exclude_glm_components=exclude_glm_components,
+                    extra_glm_paths=extra_glm_paths,
                 )
             with tempfile.TemporaryDirectory(prefix="asr_eval_") as temp_dir:
                 return self._evaluate_in_dir(
-                    Path(temp_dir), paired, profile, selected_metrics, report_dir=None
+                    Path(temp_dir),
+                    paired,
+                    profile,
+                    selected_metrics,
+                    report_dir=None,
+                    glm_components=glm_components,
+                    exclude_glm_components=exclude_glm_components,
+                    extra_glm_paths=extra_glm_paths,
                 )
 
         self.work_dir.mkdir(parents=True, exist_ok=True)
         return self._evaluate_in_dir(
-            self.work_dir, paired, profile, selected_metrics, report_dir=self.work_dir
+            self.work_dir,
+            paired,
+            profile,
+            selected_metrics,
+            report_dir=self.work_dir,
+            glm_components=glm_components,
+            exclude_glm_components=exclude_glm_components,
+            extra_glm_paths=extra_glm_paths,
         )
 
     def _evaluate_in_dir(
@@ -79,13 +104,23 @@ class ScliteEvaluator:
         profile: EvaluationProfile,
         metrics: Tuple[str, ...],
         report_dir: Optional[Path],
+        glm_components: Optional[Sequence[str]],
+        exclude_glm_components: Optional[Sequence[str]],
+        extra_glm_paths: Optional[Sequence[Union[str, Path]]],
     ) -> EvaluationResult:
         commands: List[Tuple[str, ...]] = []
         normalized_ref = [(utt_id, normalize_text(ref, profile)) for utt_id, ref, _ in paired]
         normalized_hyp = [(utt_id, normalize_text(hyp, profile)) for utt_id, _, hyp in paired]
 
         filtered_ref, filtered_hyp = self._apply_glm_filter(
-            root, profile, normalized_ref, normalized_hyp, commands
+            root,
+            profile,
+            normalized_ref,
+            normalized_hyp,
+            commands,
+            glm_components=glm_components,
+            exclude_glm_components=exclude_glm_components,
+            extra_glm_paths=extra_glm_paths,
         )
 
         scores: Dict[str, Score] = {}
@@ -130,15 +165,21 @@ class ScliteEvaluator:
         normalized_ref,
         normalized_hyp,
         commands: List[Tuple[str, ...]],
+        glm_components: Optional[Sequence[str]],
+        exclude_glm_components: Optional[Sequence[str]],
+        extra_glm_paths: Optional[Sequence[Union[str, Path]]],
     ) -> Tuple[Dict[str, str], Dict[str, str]]:
-        if profile.glm_path is None:
+        filter_dir = root / "glm_filter"
+        glm_path = resolve_glm_for_evaluation(
+            profile=profile,
+            output_dir=filter_dir,
+            glm_components=glm_components,
+            exclude_glm_components=exclude_glm_components,
+            extra_glm_paths=extra_glm_paths,
+        )
+        if glm_path is None:
             return dict(normalized_ref), dict(normalized_hyp)
 
-        glm_path = Path(profile.glm_path)
-        if not glm_path.exists():
-            raise ProfileError("GLM file does not exist: {0}".format(glm_path))
-
-        filter_dir = root / "glm_filter"
         filter_dir.mkdir(parents=True, exist_ok=True)
         raw_ref = filter_dir / "ref.raw.trn"
         raw_hyp = filter_dir / "hyp.raw.trn"
