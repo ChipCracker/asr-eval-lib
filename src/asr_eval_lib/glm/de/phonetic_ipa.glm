@@ -1,0 +1,8 @@
+;; asr-eval-lib German IPA GLM
+* name "asr-eval-lib-de-phonetic-ipa.glm"
+* desc "Starter rules for German IPA phoneme scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'T'
+;;
+[  ] => [ ]

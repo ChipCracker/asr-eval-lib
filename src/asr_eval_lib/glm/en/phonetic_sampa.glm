@@ -1,0 +1,8 @@
+;; asr-eval-lib English SAMPA GLM
+* name "asr-eval-lib-en-phonetic-sampa.glm"
+* desc "Starter rules for English SAMPA phoneme scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'T'
+;;
+[  ] => [ ]

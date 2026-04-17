@@ -1,0 +1,21 @@
+;; asr-eval-lib English orthographic GLM
+* name "asr-eval-lib-en-orthographic.glm"
+* desc "Starter rules for English orthographic ASR scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'F'
+;;
+;; Deterministic contractions only; add corpus-specific alternates in a
+;; project GLM when SCLITE alternation handling is desired.
+[  ] => [ ]
+& => and
+okay => ok
+o k => ok
+can't => can not
+cannot => can not
+won't => will not
+don't => do not
+i'm => i am
+it's => it is
+that's => that is
+there's => there is

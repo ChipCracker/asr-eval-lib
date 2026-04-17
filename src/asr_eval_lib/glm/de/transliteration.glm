@@ -1,0 +1,13 @@
+;; asr-eval-lib German transliteration GLM
+* name "asr-eval-lib-de-transliteration.glm"
+* desc "Starter rules for German Latin transliteration scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'F'
+;;
+[  ] => [ ]
+ä => ae
+ö => oe
+ü => ue
+ß => ss
+& => und

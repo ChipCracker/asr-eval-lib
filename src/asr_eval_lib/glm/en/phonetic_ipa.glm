@@ -1,0 +1,8 @@
+;; asr-eval-lib English IPA GLM
+* name "asr-eval-lib-en-phonetic-ipa.glm"
+* desc "Starter rules for English IPA phoneme scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'T'
+;;
+[  ] => [ ]

@@ -1,0 +1,11 @@
+;; asr-eval-lib English transliteration GLM
+* name "asr-eval-lib-en-transliteration.glm"
+* desc "Starter rules for English transliteration scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'F'
+;;
+[  ] => [ ]
+& => and
+okay => ok
+o k => ok

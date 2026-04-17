@@ -1,0 +1,8 @@
+;; asr-eval-lib German SAMPA GLM
+* name "asr-eval-lib-de-phonetic-sampa.glm"
+* desc "Starter rules for German SAMPA phoneme scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'T'
+;;
+[  ] => [ ]

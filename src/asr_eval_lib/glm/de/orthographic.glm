@@ -1,0 +1,15 @@
+;; asr-eval-lib German orthographic GLM
+* name "asr-eval-lib-de-orthographic.glm"
+* desc "Starter rules for German orthographic ASR scoring"
+* format = 'NIST2'
+* copy_no_hit = 'T'
+* case_sensitive = 'F'
+;;
+;; Keep this file conservative. Corpus-specific spelling conventions should
+;; be added in a project GLM and passed via orthographic_profile(...).
+[  ] => [ ]
+& => und
+okay => ok
+o k => ok
+z b => zum beispiel
+z bsp => zum beispiel
